@@ -27,6 +27,9 @@ func NewLRUCache[K comparable, V any](capacity int) *LRUCache[K, V] {
 	}
 }
 func (c *LRUCache[K, V]) Get(key K) (value V, ok bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	element, ok := c.items[key]
 	if !ok {
 		return
@@ -39,6 +42,10 @@ func (c *LRUCache[K, V]) Set(key K, value V) {
 	if c.capacity <= 0 {
 		return
 	}
+
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
 	_, is_exist := c.items[key]
 	count := len(c.items)
 	if is_exist {
